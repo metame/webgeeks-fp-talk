@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif';}
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-slide-content { background-color: #272822; color: #f3f3f3; }
+      .remark-slide-content a { text-decoration: none; color: #25F189; }
+      .remark-slide-content p { color: #969A84; }
+      .italic { font-style: italic; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Reducing Incidental Complexity with Functional Programming
+
+Michael Erwin
+[@metamje](https://twitter.com/metamje)
+
+---
+class: center, middle, italic
+
+"There is no single development, in either technology or in management technique, that by itself promises even one order-of-magnitude improvement in productivity, in reliability, in simplicity [in software engineering]."
+
+???
+No Silver Bullet, 1986
+
+---
+
+# Agenda
+
+1. What is Functional Programming?
+2. Actions vs Values
+3. The Incredibly Powerful For
+4. The Silver Bullet: Map-Filter-Reduce
+5. Map
+6. Filter
+7. Reduce
+8. Functional Programming in JavaScript
+9. Functional Programming for the Web
+10. Questions, Feedback, Insults, Roundtable on who you voted for yesterday
+
+---
+
+# What is Functional Programming
+
+* Pure functions
+* Immutable data
+* Higher-order functions
+* Strong types (maybe)
+* Only math geniuses allowed
+
+???
+Lambda calculus, referential transparency
+Preference for data manipulation over mutation
+
+
+---
+
+# Actions vs Values (1)
+
+```javascript
+class Customer {
+    name = "fred";
+    getName() { return name; }
+    /* action          value */
+}
+```
+
+???
+how many on ES6 or similar?
+Rich Hickey, Clojure
+Most (all) programs are I/O with a hell of a lot of data manipulation in between
+Start thinking less about what we want to do and more about what we want to get
+
+---
+
+# Actions vs Values (2)
+
+```javascript
+class Customer {
+    name = "fred";
+    getName() { return this.name; }
+    // action         value! value
+}
+```
+
+???
+except for the implicit value of the customer object
+
+---
+
+# Actions vs Values (3)
+
+```javascript
+const fred = {name: "fred"};
+const getName = customer => customer.name;
+      // action             value    value  
+
+const getProp = prop => obj => obj.prop;
+const getName2 = getProp('name');
+
+getName(fred); // 'fred'
+getName2(fred); // 'fred'
+```
+
+???
+explicit values/parameters
+no more wondering what `this` this is
+currying and composability
+
+--- 
+
+Stop wondering what this `this` is
+
+---
+
+# The Incredibly Powerful For (1)
+
+```javascript
+const list = [...]
+
+for (let i=0; i < list.length; i++) {
+    // whatever the hell you feel like
+}
+```
+
+---
+
+# The Incredibly Powerful For (2)
+
+```javascript
+const list = ['1','2'...]
+
+for (let i=0; i < list.length; i++) {
+    list[i] = Number(list[i]);
+}
+```
+
+Turn list of strings into numbers
+
+---
+
+# The Incredibly Powerful For (3)
+
+```javascript
+const list = [1,2..];
+const evens = [];
+
+for (let i=0; i < list.length; i++) {
+    if ( list[i] % 2 === 0 ) { evens.push(list[i]); } 
+}
+```
+
+Filter out odds
+
+---
+
+# The Incredibly Powerful For (4)
+
+```javascript
+const list = [1,2,..];
+const sum = 0;
+
+for (let i=0;, i < list.length; i++) {
+    sum += list[i];
+}
+```
+
+Add it up
+
+---
+
+# The Silver Bullet: Map-Filter-Reduce
+
+```javascript
+Array.prototype.map
+Array.prototype.filter
+Array.prototype.reduce
+```
+
+???
+ES5
+
+
+
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
