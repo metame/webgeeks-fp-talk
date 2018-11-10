@@ -1,27 +1,52 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Title</title>
-    <meta charset="utf-8">
-    <style>
-      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
-      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
-      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
 
-      body { font-family: 'Droid Serif';}
-      h1, h2, h3 {
-        font-family: 'Yanone Kaffeesatz';
-        font-weight: normal;
-      }
-      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
-      .remark-slide-content { background-color: #272822; color: #f3f3f3; }
-      .remark-slide-content a { text-decoration: none; color: #25F189; }
-      .remark-slide-content p { color: #969A84; }
-      .italic { font-style: italic; }
-    </style>
-  </head>
-  <body>
-    <textarea id="source">
+<head>
+  <title>Reducing Incidental Complexity with Functional Programming</title>
+  <meta charset="utf-8">
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+    @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+    @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+    body {
+      font-family: 'Droid Serif';
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Yanone Kaffeesatz';
+      font-weight: normal;
+    }
+
+    .remark-code,
+    .remark-inline-code {
+      font-family: 'Ubuntu Mono';
+    }
+
+    .remark-slide-content {
+      background-color: #272822;
+      color: #f3f3f3;
+    }
+
+    .remark-slide-content a {
+      text-decoration: none;
+      color: #25F189;
+    }
+
+    .remark-slide-content p {
+      color: #969A84;
+    }
+
+    .italic {
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <textarea id="source">
 
 class: center, middle
 
@@ -64,9 +89,13 @@ No Silver Bullet, 1986
 * Only math geniuses allowed
 
 ???
-Lambda calculus, referential transparency
-Preference for data manipulation over mutation
+Lambda calculus, referential transparency, side-effect free.
 
+Preference for data manipulation over mutation.
+
+Functions that take functions as arguments, functions as values.
+
+not just static types.
 
 ---
 
@@ -74,7 +103,7 @@ Preference for data manipulation over mutation
 
 ```javascript
 class Customer {
-    name = "fred";
+    name = "Donald";
     getName() { return name; }
     /* action          value */
 }
@@ -82,9 +111,13 @@ class Customer {
 
 ???
 how many on ES6 or similar?
+
 Rich Hickey, Clojure
+
 Most (all) programs are I/O with a hell of a lot of data manipulation in between
+
 Start thinking less about what we want to do and more about what we want to get
+
 
 ---
 
@@ -92,7 +125,7 @@ Start thinking less about what we want to do and more about what we want to get
 
 ```javascript
 class Customer {
-    name = "fred";
+    name = "Donald";
     getName() { return this.name; }
     // action         value! value
 }
@@ -106,32 +139,40 @@ except for the implicit value of the customer object
 # Actions vs Values (3)
 
 ```javascript
-const fred = {name: "fred"};
+const donny = {name: "Donald"};
 const getName = customer => customer.name;
       // action             value    value  
 
 const getProp = prop => obj => obj.prop;
 const getName2 = getProp('name');
 
-getName(fred); // 'fred'
-getName2(fred); // 'fred'
+getName(donny); // 'Donald'
+getName2(donny); // 'Donald'
 ```
 
 ???
 explicit values/parameters
-no more wondering what `this` this is
+
+focus on structure, not state
+
+It's not that using the word Class makes you a bad programmer; it just makes you a bad person.
+
 currying and composability
 
---- 
+---
+class: middle, center
 
-Stop wondering what this `this` is
+## Stop wondering what this `this` is
+
+???
+more true of JS than any other (popular) language
 
 ---
 
 # The Incredibly Powerful For (1)
 
 ```javascript
-const list = [...]
+const list = [..];
 
 for (let i=0; i < list.length; i++) {
     // whatever the hell you feel like
@@ -143,7 +184,7 @@ for (let i=0; i < list.length; i++) {
 # The Incredibly Powerful For (2)
 
 ```javascript
-const list = ['1','2'...]
+const list = ['1','2',..];
 
 for (let i=0; i < list.length; i++) {
     list[i] = Number(list[i]);
@@ -157,7 +198,7 @@ Turn list of strings into numbers
 # The Incredibly Powerful For (3)
 
 ```javascript
-const list = [1,2..];
+const list = [1,2,..];
 const evens = [];
 
 for (let i=0; i < list.length; i++) {
@@ -195,15 +236,278 @@ Array.prototype.reduce
 ???
 ES5
 
+Constraints
+
+Use the power you need to get the job done and no more
+
+---
+class: middle, center
+
+## "The passions of man will not conform to the dictates of reason and justice without constraint." -- Alexander Hamilton
+
+---
+
+# Map: Wrapped Value in, Wrapped Value out (1)
+
+```javascript
+const list = ['1','2',..];
+const nums = list.map(s => Number(s));
+console.log(nums); // [1,2,..]
+```
+
+"90% of iterator operations are probably maps" -- Me
+
+???
+
+---
+
+# Map: Wrapped Value in, Wrapped Value out (2)
+
+```javascript
+const list = ['1','2',..];
+const nums = list.map(Number);
+console.log(nums); // [1,2,..]
+```
+
+We don't need that lambda
+
+???
+point-free style
+
+---
+
+# Map: Wrapped Value in, Wrapped Value out (3)
 
 
+```javascript
+const nums = ['1','2',..].map(Number);
+console.log(nums); // [1,2,..]
+```
+
+Please stop filling your head with names you don't need
+
+???
+Naming is hard
+
+MIT SICP - structure and interpretation of computer programs
+
+---
+
+# Filter: Keep Only What You Want (1)
+
+```javascript
+const nums = [1,2,..];
+const evens = nums.filter(n => n % 2 === 0);
+console.log(evens); // [2,4,..];
+```
+
+???
+
+---
+
+# Filter: Keep Only What You Want (2)
+
+```javascript
+const nums = [1,2,..];
+const isEven = n => n % 2 === 0;
+const evens = nums.filter(isEven);
+console.log(evens); // [2,4,..];
+```
+
+Point-free is a little harder but maybe more expressive
+
+???
+
+---
+
+# Filter: Keep Only What You Want (3)
+
+```javascript
+const evens = [1,2,..].filter(n => n % 2 === 0);
+console.log(evens); // [2,4,..];
+```
+
+Reminder: Please stop filling your head with names you don't need
+
+???
+
+---
+
+# Reduce: The Silverest Bullet (1)
+
+```javascript
+const nums = [1,2,..,10];
+const sum = nums.reduce((a, b) => a + b);
+console.log(sum); // 55
+```
+
+---
+
+# Reduce: The Silverest Bullet (2)
+
+```javascript
+const nums = [1,2,..,10];
+const add = (a, b) => a + b;
+const sum = nums.reduce(add);
+console.log(sum); // 55
+```
+
+---
+
+# Reduce: The Silverest Bullet (3)
+
+```javascript
+const sum = [1,2,..,10].reduce((a, b) => a + b);
+console.log(sum); // 55
+```
+
+---
+
+# Reduce: The Silverest Bullet (4)
+
+```javascript
+const sum = [].reduce((a, b) => a + b); // TypeError
+```
+
+```javascript
+const sum = [].reduce((a, b) => a + b, 0);
+console.log(sum); // 0
+```
+
+---
+
+# Reduce: The Silverest Bullet (5)
+
+```javascript
+const customers = [c1,c2,..];
+console.log(c1); // {id: 1, name: "Donald"};
+```
+
+```javascript
+const cmap = {};
+for (let i=0; i < customers.length; i++) {
+    let customer = customers[i];
+    cmap[customer.id] = customer;
+}
+```
+
+```javascript
+const cmap = customers.reduce((m, c) => Object.assign(m, {[c.id]: c}), {});
+```
+
+---
+
+# Reduce: The Silverest Bullet (6)
+
+```javascript
+const map = f => l => l.reduce((r, e) => r.concat(f(e)), []);
+
+const filter = p => l => l.reduce(r, e) => p(e) ? r.concat(e) : r, []);
+```
+
+---
+
+# Map-Filter-Reduce: Bringing it all together
+
+```javascript
+const nums = [1,2,..];
+
+const count = customers.map(Number)
+                       .filter(n => n % 2 == 0)
+                       .reduce((a,b) => a + b, 0);
+```
+
+???
+moving away from actions into values
+
+Using simple functions to create powerful pipelines
+
+---
+
+# Functional Programming in JavaScript
+
+* Easy to get started (especially if on > ES6)
+  * First class functions
+* Many built-in constructs
+  * `Array.prototype.*`
+  * `Object.entries`
+* Many Libraries
+  * Ramda
+  * Sanctuary
+  * Lodash
+  * Immutable.js
+* Gradual Typing
+  * Typescript
+  * Flow
+
+---
+class: middle, center
+#### “To make biological survival possible, Mind at Large has to be funnelled through the reducing valve of the brain and nervous system. What comes out at the other end is a measly trickle of the kind of consciousness which will help us to stay alive on the surface of this particular planet. To formulate and express the contents of this reduced awareness, man has invented and endlessly elaborated those symbol-systems and implicit philosophies which we call languages. Every individual is at once the beneficiary and the victim of the linguistic tradition into which he or she has been born -- the beneficiary inasmuch as language gives access to the accumulated records of other people's experience, the victim in so far as it confirms him in the belief that reduced awareness is the only awareness and as it be-devils his sense of reality, so that he is all too apt to take his concepts for data, his words for actual things.” -- Aldous Huxley
+
+???
+his answer was take iowaska
+
+---
+
+# Functional Programming for the Web (1)
+
+## Typescript
+* A "superset" of JavaScript
+* Gradual typing
+* Many typings available
+* Microsoft
+
+## Clojurescript
+* Dynamic language
+* Lisp
+* Much community support
+
+---
+
+# Functional Programming for the Web (2)
+
+## ReasonML
+* Ocaml with brackets
+* Static types
+* Ocaml ecosystem
+* Facebook
+
+## Elm
+* Haskell inspired
+* Strongly-typed
+* Language and Framework in one
+* Front-end only
+* Limited features
+
+---
+
+# Functional Programming for the Web (3)
+
+## Purescript
+* Dialect of Haskell
+* Strongly-typed, pure, functional language
+* The most FP of what's currently available (if you want types)
+* Small community
+* Used in production by several for-profit companies
+
+---
+class: middle, center
+
+# Many Returns of the Day to You
+
+Michael Erwin
+
+Twitter: [@metamje](https://twitter.com/metamje)
+
+Github: [metame](https://github.com/metame)
 
 
     </textarea>
-    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
-    </script>
-    <script>
-      var slideshow = remark.create();
-    </script>
-  </body>
+  <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+  </script>
+  <script>
+    var slideshow = remark.create();
+  </script>
+</body>
+
 </html>
