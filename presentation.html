@@ -402,7 +402,7 @@ const cmap = customers.reduce((m, c) => Object.assign(m, {[c.id]: c}), {});
 ```javascript
 const map = f => l => l.reduce((r, e) => r.concat(f(e)), []);
 
-const filter = p => l => l.reduce(r, e) => p(e) ? r.concat(e) : r, []);
+const filter = p => l => l.reduce((r, e) => p(e) ? r.concat(e) : r, []);
 ```
 
 ---
@@ -410,11 +410,11 @@ const filter = p => l => l.reduce(r, e) => p(e) ? r.concat(e) : r, []);
 # Map-Filter-Reduce: Bringing it all together
 
 ```javascript
-const nums = [1,2,..];
+const nums = ["1","2",..];
 
-const count = customers.map(Number)
-                       .filter(n => n % 2 == 0)
-                       .reduce((a,b) => a + b, 0);
+const count = nums.map(Number)
+                  .filter(n => n % 2 == 0)
+                  .reduce((a,b) => a + b, 0);
 ```
 
 ???
